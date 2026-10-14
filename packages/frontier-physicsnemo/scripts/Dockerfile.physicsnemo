@@ -1,0 +1,26 @@
+# syntax=docker/dockerfile:1.7
+# Layer over a Frontier trainer image: NVIDIA PhysicsNeMo 2.x and torch_geometric (pure Python).
+# MeshGraphNet and FIGConvNet run on `frontier_physicsnemo.compat`'s pure-torch scatter backend,
+# so no torch_scatter wheel is needed. Only open-source wheels are added.
+#
+#   docker buildx build --platform linux/amd64 -f packages/frontier-physicsnemo/scripts/Dockerfile.physicsnemo \
+#       --build-arg BASE=registry.example.com/team/frontier-trainer:tag \
+#       -t registry.example.com/team/frontier-trainer:physicsnemo packages/frontier-physicsnemo/scripts
+#
+# BASE is required: the trainer image to extend.
+#
+# torch stays the image's own CUDA build: it is pinned in the install so the resolver cannot
+# swap it for the PyPI wheel, and the PyG extension wheels are taken for exactly that build.
+ARG BASE
+FROM ${BASE}
+ARG PHYSICSNEMO_VERSION=2.2.2
+# torch 2.14 routes some batched matmuls in float32 (GeoTransolver's context projector) to Triton
+# kernels, and Triton builds its launcher with the system C compiler: the slim base has none.
+RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends gcc libc6-dev \
+ && rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/root/.cache/uv \
+    TORCH="$(python -c 'import torch; print(torch.__version__)')" \
+ && uv pip install --python /opt/venv/bin/python \
+      --extra-index-url https://download.pytorch.org/whl/cu130 --index-strategy unsafe-best-match \
+      "torch==${TORCH}" "nvidia-physicsnemo==${PHYSICSNEMO_VERSION}" torch_geometric safetensors \
+ && cd /tmp && python -c "import torch, physicsnemo, torch_geometric; from physicsnemo.models.transolver import Transolver; from physicsnemo.models.geotransolver import GeoTransolver; from physicsnemo.models.figconvnet import FIGConvUNet; from physicsnemo.models.meshgraphnet import MeshGraphNet; assert torch.version.cuda, 'torch lost its CUDA build'; print('physicsnemo layer ok', physicsnemo.__version__, torch.__version__, torch.version.cuda)"

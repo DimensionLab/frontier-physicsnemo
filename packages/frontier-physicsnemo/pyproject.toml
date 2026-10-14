@@ -1,0 +1,35 @@
+[project]
+name = "frontier-physicsnemo"
+version = "0.9.0"
+description = "NVIDIA PhysicsNeMo integration for DimensionLab Frontier (reference models in the model registry, .mdlus checkpoints, datapipes, Hydra configs, logging)"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = "Apache-2.0"
+# Nothing here imports `frontier-train`: the model adapters live there
+# (`frontier_train.models.physicsnemo_ref`) and use this package for checkpoints and compat.
+dependencies = [
+  "frontier>=0.9.0,<0.10.0",
+]
+
+[project.optional-dependencies]
+# PhysicsNeMo itself is installed from NGC containers or PyPI (`nvidia-physicsnemo`); it is
+# optional so the package imports (and the registry lists its models) without it. Verified with
+# 2.2.2 on torch 2.14 (CPU, MPS, CUDA 13). torch_scatter is not needed: see `compat`.
+physicsnemo = ["nvidia-physicsnemo>=2.2,<3", "torch_geometric>=2.6", "safetensors>=0.4"]
+
+[build-system]
+requires = ["uv_build>=0.8.9,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+
+[tool.pytest.ini_options]
+addopts = """
+ --cov
+ --cov-report xml:'../../coverage/packages/frontier-physicsnemo/coverage.xml'
+ --junitxml='../../reports/packages/frontier-physicsnemo/unittests/junit.xml'
+"""

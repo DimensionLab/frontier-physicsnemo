@@ -1,0 +1,7 @@
+{
+  "repositories": [
+    "frontier-format",
+    "frontier-connectors",
+    "frontier-sdk"
+  ]
+}

@@ -12,6 +12,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+test = ["pytest>=8.3", "torch>=2.4", "pyyaml>=6"]
 # PhysicsNeMo itself is installed from NGC containers or PyPI (`nvidia-physicsnemo`); it is
 # optional so the package imports (and the registry lists its models) without it. Verified with
 # 2.2.2 on torch 2.14 (CPU, MPS, CUDA 13). torch_scatter is not needed: see `compat`.

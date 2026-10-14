@@ -22,7 +22,7 @@ Set `model.name` in a training config:
 ```yaml
 model:
   name: physicsnemo.transolver
-  params: {n_layers: 8, n_hidden: 256, slice_num: 64}
+  params: { n_layers: 8, n_hidden: 256, slice_num: 64 }
 ```
 
 ```bash
@@ -32,24 +32,24 @@ python -m frontier_train finetune --base nvidia-transolver-drivaerml --config my
 
 ## Models
 
-| `model.name` | PhysicsNeMo class | Task |
-|---|---|---|
-| `physicsnemo.transolver` | `models.transolver.Transolver` | Surface pressure and Cd |
+| `model.name`                | PhysicsNeMo class                    | Task                    |
+| --------------------------- | ------------------------------------ | ----------------------- |
+| `physicsnemo.transolver`    | `models.transolver.Transolver`       | Surface pressure and Cd |
 | `physicsnemo.geotransolver` | `models.geotransolver.GeoTransolver` | Surface pressure and Cd |
-| `physicsnemo.figconvnet` | `models.figconvnet.FIGConvUNet` | Surface pressure and Cd |
-| `physicsnemo.meshgraphnet` | `models.meshgraphnet.MeshGraphNet` | Transient mesh rollouts |
+| `physicsnemo.figconvnet`    | `models.figconvnet.FIGConvUNet`      | Surface pressure and Cd |
+| `physicsnemo.meshgraphnet`  | `models.meshgraphnet.MeshGraphNet`   | Transient mesh rollouts |
 
 `model.params` takes PhysicsNeMo's constructor arguments. Input and output widths come from
 the dataset.
 
 ## API
 
-| Module | What it does |
-|---|---|
+| Module                             | What it does                                                                                                                                                |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `frontier_physicsnemo.checkpoints` | `save_mdlus`, `load_mdlus`, `read_mdlus`: write and read `.mdlus` checkpoints. A training run of a PhysicsNeMo model writes `best.mdlus` next to `best.pt`. |
-| `frontier_physicsnemo.hydra` | Convert PhysicsNeMo recipe model nodes (`_target_` plus arguments) to Frontier `model:` blocks and back. |
-| `frontier_physicsnemo.compat` | `ensure_torch_scatter()`: provide `scatter` and `segment_csr` when `torch_scatter` is not installed. |
-| `frontier_physicsnemo.logging` | `FrontierLogger`: log a PhysicsNeMo training loop to Frontier. |
+| `frontier_physicsnemo.hydra`       | Convert PhysicsNeMo recipe model nodes (`_target_` plus arguments) to Frontier `model:` blocks and back.                                                    |
+| `frontier_physicsnemo.compat`      | `ensure_torch_scatter()`: provide `scatter` and `segment_csr` when `torch_scatter` is not installed.                                                        |
+| `frontier_physicsnemo.logging`     | `FrontierLogger`: log a PhysicsNeMo training loop to Frontier.                                                                                              |
 
 ## Licence
 
